@@ -1,21 +1,29 @@
-import { Search, Sun, Moon } from "lucide-react";
+import { Search, Sun, Moon, Menu } from "lucide-react";
 import { useState } from "react";
 import NotificationBell from "./NotificationBell.jsx";
 
-export default function TopBar({ sidebarWidth, notifications, unreadCount, onMarkAllRead, onMarkRead, isDark, onToggleTheme }) {
+export default function TopBar({ sidebarWidth, onMobileMenuClick, notifications, unreadCount, onMarkAllRead, onMarkRead, isDark, onToggleTheme }) {
   const [searchFocused, setSearchFocused] = useState(false);
 
   return (
     <header
-      className="sticky top-0 z-20 flex h-16 items-center gap-4 border-b backdrop-blur-xl transition-colors"
+      className="sticky top-0 z-20 flex h-16 items-center gap-2 md:gap-4 border-b backdrop-blur-xl transition-all duration-200 ml-0 md:ml-[var(--sidebar-width)] px-3 md:px-4"
       style={{
-        marginLeft: sidebarWidth,
         borderColor: "var(--border-default)",
         background: "var(--surface-glass)",
       }}
     >
+      {/* Mobile Menu Button */}
+      <button
+        onClick={onMobileMenuClick}
+        className="md:hidden flex h-9 w-9 shrink-0 items-center justify-center rounded-xl transition-colors hover:opacity-80"
+        style={{ color: "var(--text-primary)", background: "var(--bg-hover)" }}
+      >
+        <Menu className="h-5 w-5" />
+      </button>
+
       {/* Search */}
-      <div className="relative flex-1 max-w-md ml-2">
+      <div className="relative flex-1 max-w-md">
         <Search
           className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transition-colors"
           style={{ color: searchFocused ? "#da7320" : "var(--text-muted)" }}

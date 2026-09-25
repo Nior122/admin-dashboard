@@ -21,31 +21,43 @@ const ICON_MAP = {
   pause: Pause,
 };
 
-export default function Sidebar({ collapsed, onToggle, activityItems = [], formatRelative = (ms) => "" }) {
+export default function Sidebar({ collapsed, onToggle, mobileOpen, onMobileClose, activityItems = [], formatRelative = (ms) => "" }) {
+  const isMobileCollapsed = false; // Never actually "collapsed" internally when on mobile view
+
   return (
-    <motion.aside
-      initial={false}
-      animate={{ width: collapsed ? 72 : 260 }}
-      transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
-      className="fixed left-0 top-0 z-30 flex h-screen flex-col border-r backdrop-blur-xl"
-      style={{
-        background: "var(--bg-sidebar)",
-        borderColor: "var(--border-default)",
-      }}
-    >
+    <>
+      <AnimatePresence>
+        {mobileOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={onMobileClose}
+            className="fixed inset-0 z-30 bg-black/20 backdrop-blur-sm md:hidden"
+          />
+        )}
+      </AnimatePresence>
+
+      <aside
+        className={`fixed left-0 top-0 z-40 flex h-screen flex-col border-r backdrop-blur-xl transition-all duration-300 md:translate-x-0 w-[260px] md:w-[var(--sidebar-width)] ${mobileOpen ? 'translate-x-0' : '-translate-x-full'}`}
+        style={{
+          background: "var(--bg-sidebar)",
+          borderColor: "var(--border-default)",
+        }}
+      >
       {/* Logo */}
       <div className="flex h-16 items-center gap-3 border-b px-5" style={{ borderColor: "var(--border-default)" }}>
         <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-brand-500 shadow-lg shadow-brand-500/20">
           <Sparkles className="h-5 w-5 text-white" />
         </div>
         <AnimatePresence>
-          {!collapsed && (
+          {(!collapsed || mobileOpen) && (
             <motion.div
               initial={{ opacity: 0, x: -8 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -8 }}
               transition={{ duration: 0.15 }}
-              className="overflow-hidden whitespace-nowrap"
+              className="overflow-hidden whitespace-nowrap md:block"
             >
               <div className="text-sm font-bold tracking-tight" style={{ color: "var(--text-primary)" }}>Aduke Studio</div>
               <div className="text-[11px]" style={{ color: "var(--text-muted)" }}>Admin Panel</div>
@@ -54,7 +66,7 @@ export default function Sidebar({ collapsed, onToggle, activityItems = [], forma
         </AnimatePresence>
         <button
           onClick={onToggle}
-          className="ml-auto flex h-7 w-7 shrink-0 items-center justify-center rounded-lg transition-colors hover:opacity-80"
+          className="ml-auto hidden h-7 w-7 shrink-0 items-center justify-center rounded-lg transition-colors hover:opacity-80 md:flex"
           style={{ color: "var(--text-muted)", background: "var(--bg-hover)" }}
           aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
         >
@@ -93,7 +105,7 @@ export default function Sidebar({ collapsed, onToggle, activityItems = [], forma
                     )}
                     <item.icon className="h-5 w-5 shrink-0" />
                     <AnimatePresence>
-                      {!collapsed && (
+                      {(!collapsed || mobileOpen) && (
                         <motion.span
                           initial={{ opacity: 0, width: 0 }}
                           animate={{ opacity: 1, width: "auto" }}
@@ -115,7 +127,7 @@ export default function Sidebar({ collapsed, onToggle, activityItems = [], forma
 
       {/* Recent Activity */}
       <AnimatePresence>
-        {!collapsed && (
+        {(!collapsed || mobileOpen) && (
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -166,6 +178,7 @@ export default function Sidebar({ collapsed, onToggle, activityItems = [], forma
           </motion.div>
         )}
       </AnimatePresence>
-    </motion.aside>
+    </aside>
+    </>
   );
 }
